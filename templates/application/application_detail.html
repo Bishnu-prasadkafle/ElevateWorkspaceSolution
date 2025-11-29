@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Application Details - Elevate Workforce Solutions{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-file-alt"></i> Application Details
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Status Badge -->
+                    <div class="mb-4">
+                        <span class="badge bg-{{ application.get_status_badge_color }} p-3" style="font-size: 1rem;">
+                            {{ application.get_status_display }}
+                        </span>
+                    </div>
+
+                    <!-- Job Info -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Job Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="mb-2">{{ application.job.title }}</h5>
+                            <p class="text-muted mb-3">
+                                <i class="fas fa-building"></i> {{ application.job.company.company_name }}
+                            </p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Location:</strong> {{ application.job.location }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Type:</strong> {{ application.job.get_job_type_display }}
+                                </div>
+                            </div>
+                            {% if application.job.salary_min or application.job.salary_max %}
+                            <div class="mt-2">
+                                <strong>Salary Range:</strong> {{ application.job.get_salary_range }}
+                            </div>
+                            {% endif %}
+                            <div class="mt-3">
+                                <a href="{% url 'jobs:job_detail' application.job.pk %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> View Full Job
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Applicant Info (for company) -->
+                    {% if is_company %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Applicant Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="mb-2">{{ application.job_seeker.user.get_full_name|default:application.job_seeker.user.username }}</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Email:</strong> {{ application.job_seeker.user.email }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Phone:</strong> {{ application.job_seeker.user.phone_number|default:"Not provided" }}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Location:</strong> {{ application.job_seeker.location|default:"Not provided" }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Experience:</strong> {{ application.job_seeker.experience_years }} years
+                                </div>
+                            </div>
+                            {% if application.job_seeker.skills %}
+                            <div class="mb-3">
+                                <strong>Skills:</strong><br>
+                                {% for skill in application.job_seeker.get_skills_list %}
+                                    <span class="badge bg-primary">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Cover Letter -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Cover Letter</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if application.cover_letter %}
+                                {{ application.cover_letter|linebreaks }}
+                            {% else %}
+                                <p class="text-muted">No cover letter provided</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Application Timeline -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-timeline"></i> Application Timeline</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Applied On:</strong><br>
+                                    {{ application.applied_at|date:"F d, Y g:i A" }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Days Since Applied:</strong><br>
+                                    {{ application.get_days_since_applied }} day(s)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Actions -->
+        <div class="col-md-4">
+            <!-- For Applicant -->
+            {% if is_applicant %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-cog"></i> Actions</h5>
+                </div>
+                <div class="card-body">
+                    {% if application.can_be_withdrawn %}
+                    <form method="post" action="{% url 'application:withdraw_application' application.pk %}" onsubmit="return confirm('Are you sure you want to withdraw this application?')">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="fas fa-undo"></i> Withdraw Application
+                        </button>
+                    </form>
+                    {% else %}
+                    <p class="text-muted text-center mb-0">This application cannot be withdrawn</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> My Applications</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'application:my_applications' %}" class="btn btn-primary w-100">
+                        <i class="fas fa-list"></i> View All Applications
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- For Company -->
+            {% if is_company %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-cog"></i> Update Status</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'application:update_application_status' application.pk %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <select class="form-select" name="status" required>
+                                {% for value, label in application.APPLICATION_STATUS_CHOICES %}
+                                <option value="{{ value }}" {% if application.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save"></i> Update Status
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Dashboard</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'application:company_dashboard' %}" class="btn btn-primary w-100">
+                        <i class="fas fa-chart-bar"></i> Go to Dashboard
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

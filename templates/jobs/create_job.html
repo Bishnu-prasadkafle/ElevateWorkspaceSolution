@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Post a New Job - Elevate Workforce Solutions{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-plus"></i> Post a New Job
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label for="title" class="form-label fw-bold">Job Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" required placeholder="e.g., Senior Python Developer">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="form-label fw-bold">Job Description *</label>
+                            <textarea class="form-control" id="description" name="description" rows="6" required placeholder="Describe the job responsibilities and details"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="job_type" class="form-label fw-bold">Job Type *</label>
+                                <select class="form-select" id="job_type" name="job_type" required>
+                                    <option value="">Select Job Type</option>
+                                    {% for value, label in job_types %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="experience_level" class="form-label fw-bold">Experience Level *</label>
+                                <select class="form-select" id="experience_level" name="experience_level" required>
+                                    <option value="">Select Experience Level</option>
+                                    {% for value, label in experience_levels %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="location" class="form-label fw-bold">Location *</label>
+                                <input type="text" class="form-control" id="location" name="location" required placeholder="Job location">
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="total_positions" class="form-label fw-bold">Number of Positions</label>
+                                <input type="number" class="form-control" id="total_positions" name="total_positions" value="1" min="1">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="salary_min" class="form-label fw-bold">Minimum Salary (Optional)</label>
+                                <input type="number" class="form-control" id="salary_min" name="salary_min" step="1000" placeholder="Minimum salary">
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="salary_max" class="form-label fw-bold">Maximum Salary (Optional)</label>
+                                <input type="number" class="form-control" id="salary_max" name="salary_max" step="1000" placeholder="Maximum salary">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="requirements" class="form-label fw-bold">Requirements *</label>
+                            <textarea class="form-control" id="requirements" name="requirements" rows="5" required placeholder="Enter requirements (one per line)"></textarea>
+                            <small class="text-muted">Enter each requirement on a new line</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="deadline" class="form-label fw-bold">Application Deadline (Optional)</label>
+                            <input type="datetime-local" class="form-control" id="deadline" name="deadline">
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-5">
+                                <i class="fas fa-paper-plane"></i> Post Job
+                            </button>
+                            <a href="{% url 'application:company_dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
