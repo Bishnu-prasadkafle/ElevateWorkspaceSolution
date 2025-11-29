@@ -52,7 +52,7 @@ def register(request):
                 first_name=request.POST.get('first_name', ''),
                 last_name=request.POST.get('last_name', '')
             )
-            
+
             # Create corresponding profile
             if user_type == 'job_seeker':
                 JobSeeker.objects.create(
@@ -60,7 +60,7 @@ def register(request):
                     location=request.POST.get('location', ''),
                     skills=request.POST.get('skills', '')
                 )
-                messages.success(request, 'Job Seeker account created successfully! Please log in.')
+                messages.success(request, 'Job Seeker account created successfully!')
             else:  # company
                 Company.objects.create(
                     user=user,
@@ -69,9 +69,20 @@ def register(request):
                     location=request.POST.get('location', ''),
                     description=request.POST.get('description', '')
                 )
-                messages.success(request, 'Company account created successfully! Please log in.')
-            
-            return redirect('login')
+                messages.success(request, 'Company account created successfully!')
+
+            # Automatically log the user in after successful registration
+            try:
+                login(request, user)
+            except Exception:
+                # If auto-login fails for any reason, fall back to login page
+                return redirect('accounts:login')
+
+            # Redirect based on role
+            if user.is_company():
+                return redirect('application:company_dashboard')
+            else:
+                return redirect('jobs:job_list')
         
         except Exception as e:
             messages.error(request, f'Error during registration: {str(e)}')
@@ -85,7 +96,11 @@ def register(request):
 def login_view(request):
     """Handle user login"""
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        # Redirect authenticated users based on role
+        if request.user.is_company():
+            return redirect('application:company_dashboard')
+        else:
+            return redirect('jobs:job_list')
     
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -107,9 +122,9 @@ def login_view(request):
             
             # Redirect based on user role
             if user.is_company():
-                return redirect('company_dashboard')
+                return redirect('application:company_dashboard')
             else:
-                return redirect('job_list')
+                return redirect('jobs:job_list')
         else:
             messages.error(request, 'Invalid username or password.')
             return render(request, 'accounts/login.html')
@@ -117,16 +132,15 @@ def login_view(request):
     return render(request, 'accounts/login.html')
 
 
-@login_required(login_url='login')
-@require_http_methods(["POST"])
 def logout_view(request):
     """Handle user logout"""
-    logout(request)
-    messages.success(request, 'You have been logged out successfully.')
+    if request.user.is_authenticated:
+        logout(request)
+        messages.success(request, 'You have been logged out successfully.')
     return redirect('home')
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 def profile(request):
     """Display user profile"""
     context = {}
@@ -146,7 +160,7 @@ def profile(request):
     return render(request, 'accounts/profile.html', context)
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 @require_http_methods(["GET", "POST"])
 def profile_edit(request):
     """Edit user profile"""

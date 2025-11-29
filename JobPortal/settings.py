@@ -134,3 +134,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 
+# Login settings
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'jobs:job_list'
+
+# Login settings (use namespaced url names)
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'jobs:job_list'
+

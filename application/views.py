@@ -7,7 +7,7 @@ from jobs.models import Job
 from .models import JobApplication
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 @require_http_methods(["GET", "POST"])
 def apply_job(request, job_id):
     """Submit a job application"""
@@ -16,23 +16,23 @@ def apply_job(request, job_id):
     # Check if user is a job seeker
     if not request.user.is_job_seeker():
         messages.error(request, 'Only job seekers can apply for jobs.')
-        return redirect('job_detail', pk=job_id)
+        return redirect('jobs:job_detail', pk=job_id)
     
     try:
         job_seeker = request.user.job_seeker_profile
     except:
         messages.error(request, 'Job seeker profile not found.')
-        return redirect('job_detail', pk=job_id)
+        return redirect('jobs:job_detail', pk=job_id)
     
     # Check if already applied
     if JobApplication.objects.filter(job=job, job_seeker=job_seeker).exists():
         messages.warning(request, 'You have already applied for this job.')
-        return redirect('job_detail', pk=job_id)
+        return redirect('jobs:job_detail', pk=job_id)
     
     # Check if deadline passed
     if job.is_application_deadline_passed():
         messages.error(request, 'Application deadline has passed.')
-        return redirect('job_detail', pk=job_id)
+        return redirect('jobs:job_detail', pk=job_id)
     
     if request.method == 'POST':
         try:
@@ -46,11 +46,11 @@ def apply_job(request, job_id):
             )
             
             messages.success(request, 'Your application has been submitted successfully!')
-            return redirect('application_detail', pk=application.pk)
+            return redirect('application:application_detail', pk=application.pk)
         
         except Exception as e:
             messages.error(request, f'Error submitting application: {str(e)}')
-            return redirect('job_detail', pk=job_id)
+            return redirect('jobs:job_detail', pk=job_id)
     
     context = {
         'job': job,
@@ -59,7 +59,7 @@ def apply_job(request, job_id):
     return render(request, 'application/apply_job.html', context)
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 def application_detail(request, pk):
     """Display application details"""
     application = get_object_or_404(JobApplication, pk=pk)
@@ -72,7 +72,7 @@ def application_detail(request, pk):
     
     if not (is_applicant or is_company):
         messages.error(request, 'You do not have permission to view this application.')
-        return redirect('job_list')
+        return redirect('jobs:job_list')
     
     context = {
         'application': application,
@@ -83,18 +83,18 @@ def application_detail(request, pk):
     return render(request, 'application/application_detail.html', context)
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 def my_applications(request):
     """Display job seeker's applications"""
     if not request.user.is_job_seeker():
         messages.error(request, 'This page is for job seekers only.')
-        return redirect('job_list')
+        return redirect('jobs:job_list')
     
     try:
         job_seeker = request.user.job_seeker_profile
     except:
         messages.error(request, 'Job seeker profile not found.')
-        return redirect('job_list')
+        return redirect('jobs:job_list')
     
     # Filter applications
     applications = JobApplication.objects.filter(
@@ -126,7 +126,7 @@ def my_applications(request):
     return render(request, 'application/my_applications.html', context)
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 @require_http_methods(["POST"])
 def withdraw_application(request, pk):
     """Withdraw a job application"""
@@ -135,23 +135,23 @@ def withdraw_application(request, pk):
     # Check if user is the applicant
     if application.job_seeker.user != request.user:
         messages.error(request, 'You do not have permission to withdraw this application.')
-        return redirect('my_applications')
+        return redirect('application:my_applications')
     
     if not application.can_be_withdrawn():
         messages.error(request, 'This application cannot be withdrawn.')
-        return redirect('application_detail', pk=pk)
+        return redirect('application:application_detail', pk=pk)
     
     try:
         application.status = 'withdrawn'
         application.save()
         messages.success(request, 'Application withdrawn successfully!')
-        return redirect('my_applications')
+        return redirect('application:my_applications')
     except Exception as e:
         messages.error(request, f'Error withdrawing application: {str(e)}')
-        return redirect('application_detail', pk=pk)
+        return redirect('application:application_detail', pk=pk)
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 @require_http_methods(["GET", "POST"])
 def update_application_status(request, pk):
     """Update application status (for companies)"""
@@ -160,23 +160,23 @@ def update_application_status(request, pk):
     # Check if user is the company owner
     if application.job.company.user != request.user:
         messages.error(request, 'You do not have permission to update this application.')
-        return redirect('job_list')
+        return redirect('jobs:job_list')
     
     if request.method == 'POST':
         new_status = request.POST.get('status')
         
         if new_status not in dict(application.APPLICATION_STATUS_CHOICES):
             messages.error(request, 'Invalid status.')
-            return redirect('application_detail', pk=pk)
+            return redirect('application:application_detail', pk=pk)
         
         try:
             application.status = new_status
             application.save()
             messages.success(request, f'Application status updated to {new_status}!')
-            return redirect('application_detail', pk=pk)
+            return redirect('application:application_detail', pk=pk)
         except Exception as e:
             messages.error(request, f'Error updating status: {str(e)}')
-            return redirect('application_detail', pk=pk)
+            return redirect('application:application_detail', pk=pk)
     
     context = {
         'application': application,
@@ -191,13 +191,13 @@ def company_dashboard(request):
     """Company dashboard displaying jobs and applications"""
     if not request.user.is_company():
         messages.error(request, 'This page is for companies only.')
-        return redirect('job_list')
+        return redirect('jobs:job_list')
     
     try:
         company = request.user.company_profile
     except:
         messages.error(request, 'Company profile not found.')
-        return redirect('job_list')
+        return redirect('jobs:job_list')
     
     # Get company's jobs
     jobs = company.jobs.all().order_by('-posted_at')

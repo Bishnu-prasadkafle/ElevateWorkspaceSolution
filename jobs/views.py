@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from decimal import Decimal, InvalidOperation
 from .models import Job
 from application.models import JobApplication
 
@@ -82,22 +83,48 @@ def job_detail(request, pk):
     return render(request, 'jobs/job_detail.html', context)
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 @require_http_methods(["GET", "POST"])
 def create_job(request):
     """Create a new job posting (only for companies)"""
     if not request.user.is_company():
         messages.error(request, 'Only companies can post jobs.')
-        return redirect('job_list')
+        return redirect('jobs:job_list')
     
     try:
         company = request.user.company_profile
     except:
         messages.error(request, 'Company profile not found.')
-        return redirect('job_list')
+        return redirect('jobs:job_list')
     
     if request.method == 'POST':
         try:
+            # Handle salary fields - convert to Decimal if provided
+            salary_min = None
+            salary_max = None
+            
+            salary_min_str = request.POST.get('salary_min', '').strip()
+            if salary_min_str:
+                try:
+                    salary_min = Decimal(salary_min_str)
+                except (InvalidOperation, ValueError):
+                    messages.error(request, 'Minimum salary must be a valid number.')
+                    return render(request, 'jobs/create_job.html', {
+                        'job_types': Job.JOB_TYPE_CHOICES,
+                        'experience_levels': Job.EXPERIENCE_LEVEL_CHOICES,
+                    })
+            
+            salary_max_str = request.POST.get('salary_max', '').strip()
+            if salary_max_str:
+                try:
+                    salary_max = Decimal(salary_max_str)
+                except (InvalidOperation, ValueError):
+                    messages.error(request, 'Maximum salary must be a valid number.')
+                    return render(request, 'jobs/create_job.html', {
+                        'job_types': Job.JOB_TYPE_CHOICES,
+                        'experience_levels': Job.EXPERIENCE_LEVEL_CHOICES,
+                    })
+            
             job = Job.objects.create(
                 company=company,
                 title=request.POST.get('title'),
@@ -107,16 +134,25 @@ def create_job(request):
                 job_type=request.POST.get('job_type'),
                 experience_level=request.POST.get('experience_level'),
                 total_positions=int(request.POST.get('total_positions', 1)),
-                salary_min=request.POST.get('salary_min') or None,
-                salary_max=request.POST.get('salary_max') or None,
+                salary_min=salary_min,
+                salary_max=salary_max,
                 deadline=request.POST.get('deadline') or None,
             )
             messages.success(request, 'Job posted successfully!')
-            return redirect('job_detail', pk=job.pk)
+            return redirect('jobs:job_detail', pk=job.pk)
         
+        except ValueError as e:
+            messages.error(request, f'Invalid input: {str(e)}')
+            return render(request, 'jobs/create_job.html', {
+                'job_types': Job.JOB_TYPE_CHOICES,
+                'experience_levels': Job.EXPERIENCE_LEVEL_CHOICES,
+            })
         except Exception as e:
             messages.error(request, f'Error posting job: {str(e)}')
-            return render(request, 'jobs/create_job.html')
+            return render(request, 'jobs/create_job.html', {
+                'job_types': Job.JOB_TYPE_CHOICES,
+                'experience_levels': Job.EXPERIENCE_LEVEL_CHOICES,
+            })
     
     context = {
         'job_types': Job.JOB_TYPE_CHOICES,
@@ -126,7 +162,7 @@ def create_job(request):
     return render(request, 'jobs/create_job.html', context)
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 @require_http_methods(["GET", "POST"])
 def edit_job(request, pk):
     """Edit an existing job posting"""
@@ -135,10 +171,38 @@ def edit_job(request, pk):
     # Check if user is the company owner
     if not request.user.is_company() or job.company.user != request.user:
         messages.error(request, 'You do not have permission to edit this job.')
-        return redirect('job_list')
+        return redirect('jobs:job_list')
     
     if request.method == 'POST':
         try:
+            # Handle salary fields - convert to Decimal if provided
+            salary_min = None
+            salary_max = None
+            
+            salary_min_str = request.POST.get('salary_min', '').strip()
+            if salary_min_str:
+                try:
+                    salary_min = Decimal(salary_min_str)
+                except (InvalidOperation, ValueError):
+                    messages.error(request, 'Minimum salary must be a valid number.')
+                    return render(request, 'jobs/edit_job.html', {
+                        'job': job,
+                        'job_types': Job.JOB_TYPE_CHOICES,
+                        'experience_levels': Job.EXPERIENCE_LEVEL_CHOICES,
+                    })
+            
+            salary_max_str = request.POST.get('salary_max', '').strip()
+            if salary_max_str:
+                try:
+                    salary_max = Decimal(salary_max_str)
+                except (InvalidOperation, ValueError):
+                    messages.error(request, 'Maximum salary must be a valid number.')
+                    return render(request, 'jobs/edit_job.html', {
+                        'job': job,
+                        'job_types': Job.JOB_TYPE_CHOICES,
+                        'experience_levels': Job.EXPERIENCE_LEVEL_CHOICES,
+                    })
+            
             job.title = request.POST.get('title', job.title)
             job.description = request.POST.get('description', job.description)
             job.requirements = request.POST.get('requirements', job.requirements)
@@ -146,14 +210,16 @@ def edit_job(request, pk):
             job.job_type = request.POST.get('job_type', job.job_type)
             job.experience_level = request.POST.get('experience_level', job.experience_level)
             job.total_positions = int(request.POST.get('total_positions', job.total_positions))
-            job.salary_min = request.POST.get('salary_min') or None
-            job.salary_max = request.POST.get('salary_max') or None
+            job.salary_min = salary_min
+            job.salary_max = salary_max
             job.deadline = request.POST.get('deadline') or None
             job.save()
             
             messages.success(request, 'Job updated successfully!')
-            return redirect('job_detail', pk=job.pk)
+            return redirect('jobs:job_detail', pk=job.pk)
         
+        except ValueError as e:
+            messages.error(request, f'Invalid input: {str(e)}')
         except Exception as e:
             messages.error(request, f'Error updating job: {str(e)}')
     
@@ -166,7 +232,7 @@ def edit_job(request, pk):
     return render(request, 'jobs/edit_job.html', context)
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 @require_http_methods(["POST"])
 def delete_job(request, pk):
     """Delete a job posting"""
@@ -175,19 +241,19 @@ def delete_job(request, pk):
     # Check if user is the company owner
     if not request.user.is_company() or job.company.user != request.user:
         messages.error(request, 'You do not have permission to delete this job.')
-        return redirect('job_list')
+        return redirect('jobs:job_list')
     
     try:
         job_title = job.title
         job.delete()
         messages.success(request, f'Job "{job_title}" deleted successfully!')
-        return redirect('company_dashboard')
+        return redirect('application:company_dashboard')
     except Exception as e:
         messages.error(request, f'Error deleting job: {str(e)}')
-        return redirect('job_detail', pk=job.pk)
+        return redirect('jobs:job_detail', pk=job.pk)
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 @require_http_methods(["POST"])
 def toggle_job_status(request, pk):
     """Toggle job active/inactive status"""
@@ -196,14 +262,14 @@ def toggle_job_status(request, pk):
     # Check if user is the company owner
     if not request.user.is_company() or job.company.user != request.user:
         messages.error(request, 'You do not have permission to modify this job.')
-        return redirect('job_list')
+        return redirect('jobs:job_list')
     
     try:
         job.is_active = not job.is_active
         job.save()
         status_text = "activated" if job.is_active else "deactivated"
         messages.success(request, f'Job {status_text} successfully!')
-        return redirect('company_dashboard')
+        return redirect('application:company_dashboard')
     except Exception as e:
         messages.error(request, f'Error updating job status: {str(e)}')
-        return redirect('job_detail', pk=job.pk)
+        return redirect('jobs:job_detail', pk=job.pk)
