@@ -138,7 +138,8 @@ AUTH_USER_MODEL = 'accounts.User'
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'jobs:job_list'
 
-# Login settings (use namespaced url names)
+# Login settings
 LOGIN_URL = 'accounts:login'
+# Dynamic redirect handled in views based on user role
 LOGIN_REDIRECT_URL = 'jobs:job_list'
 

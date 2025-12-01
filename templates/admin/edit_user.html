@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit User - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1><i class="fas fa-user-edit"></i> Edit User</h1>
+            <p class="text-muted">Update user account information</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <h5 class="mb-3">Basic Information</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" id="username" name="username" class="form-control" value="{{ user.username }}" disabled>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" id="first_name" name="first_name" class="form-control" value="{{ user.first_name }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" id="last_name" name="last_name" class="form-control" value="{{ user.last_name }}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone_number" class="form-label">Phone Number</label>
+                                <input type="tel" id="phone_number" name="phone_number" class="form-control" value="{{ user.phone_number }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="is_active" class="form-label">Status</label>
+                                <div class="form-check mt-2">
+                                    <input type="checkbox" id="is_active" name="is_active" class="form-check-input" {% if user.is_active %}checked{% endif %}>
+                                    <label class="form-check-label" for="is_active">
+                                        Active
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if user.is_job_seeker %}
+                            <hr class="my-4">
+                            <h5 class="mb-3">Job Seeker Information</h5>
+                            {% if job_seeker %}
+                                <div class="mb-3">
+                                    <label for="location" class="form-label">Location</label>
+                                    <input type="text" id="location" name="location" class="form-control" value="{{ job_seeker.location }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="skills" class="form-label">Skills <small class="text-muted">(comma-separated)</small></label>
+                                    <input type="text" id="skills" name="skills" class="form-control" value="{{ job_seeker.skills }}">
+                                </div>
+                            {% endif %}
+                        {% elif user.is_company %}
+                            <hr class="my-4">
+                            <h5 class="mb-3">Company Information</h5>
+                            {% if company %}
+                                <div class="mb-3">
+                                    <label for="company_name" class="form-label">Company Name</label>
+                                    <input type="text" id="company_name" name="company_name" class="form-control" value="{{ company.company_name }}">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="industry" class="form-label">Industry</label>
+                                        <input type="text" id="industry" name="industry" class="form-control" value="{{ company.industry }}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="location" class="form-label">Location</label>
+                                        <input type="text" id="location" name="location" class="form-control" value="{{ company.location }}">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea id="description" name="description" class="form-control" rows="4">{{ company.description }}</textarea>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <a href="{% url 'accounts:manage_users' %}" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

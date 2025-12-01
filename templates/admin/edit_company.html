@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Company - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1><i class="fas fa-edit"></i> Edit Company</h1>
+            <p class="text-muted">Update company information</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <h5 class="mb-3">Company Information</h5>
+                        <div class="mb-3">
+                            <label for="company_name" class="form-label">Company Name</label>
+                            <input type="text" id="company_name" name="company_name" class="form-control" value="{{ company.company_name }}" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="industry" class="form-label">Industry</label>
+                                <input type="text" id="industry" name="industry" class="form-control" value="{{ company.industry }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="location" class="form-label">Location</label>
+                                <input type="text" id="location" name="location" class="form-control" value="{{ company.location }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="website" class="form-label">Website</label>
+                            <input type="url" id="website" name="website" class="form-control" value="{{ company.website }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea id="description" name="description" class="form-control" rows="5">{{ company.description }}</textarea>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h5 class="mb-3">Status & Verification</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select id="status" name="status" class="form-select">
+                                    <option value="active" {% if company.status == 'active' %}selected{% endif %}>Active</option>
+                                    <option value="inactive" {% if company.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                                    <option value="suspended" {% if company.status == 'suspended' %}selected{% endif %}>Suspended</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Verified</label>
+                                <div class="form-check mt-2">
+                                    <input type="checkbox" id="verified" name="verified" class="form-check-input" {% if company.verified %}checked{% endif %}>
+                                    <label class="form-check-label" for="verified">
+                                        Mark company as verified
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <a href="{% url 'accounts:manage_companies' %}" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -168,6 +168,11 @@
                     {% if user.is_authenticated %}
                         {% if user.is_job_seeker %}
                             <li class="nav-item">
+                                <a class="nav-link" href="{% url 'accounts:job_seeker_dashboard' %}">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="{% url 'application:my_applications' %}">
                                     <i class="fas fa-file-alt"></i> My Applications
                                 </a>
@@ -181,6 +186,13 @@
                             <li class="nav-item">
                                 <a class="nav-link btn btn-success text-white" href="{% url 'jobs:create_job' %}" style="margin-left: 10px; padding: 0.5rem 1rem;">
                                     <i class="fas fa-plus"></i> Post Job
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-warning text-white" href="{% url 'accounts:admin_dashboard' %}" style="margin-left: 10px; padding: 0.5rem 1rem;">
+                                    <i class="fas fa-shield-alt"></i> Admin
                                 </a>
                             </li>
                         {% endif %}

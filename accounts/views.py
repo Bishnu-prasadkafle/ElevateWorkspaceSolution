@@ -4,8 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import User, JobSeeker
 from companies.models import Company
+from application.models import JobApplication
 
 
 @require_http_methods(["GET", "POST"])
@@ -71,18 +73,7 @@ def register(request):
                 )
                 messages.success(request, 'Company account created successfully!')
 
-            # Automatically log the user in after successful registration
-            try:
-                login(request, user)
-            except Exception:
-                # If auto-login fails for any reason, fall back to login page
-                return redirect('accounts:login')
-
-            # Redirect based on role
-            if user.is_company():
-                return redirect('application:company_dashboard')
-            else:
-                return redirect('jobs:job_list')
+            return redirect('accounts:login')
         
         except Exception as e:
             messages.error(request, f'Error during registration: {str(e)}')
@@ -100,7 +91,7 @@ def login_view(request):
         if request.user.is_company():
             return redirect('application:company_dashboard')
         else:
-            return redirect('jobs:job_list')
+            return redirect('accounts:job_seeker_dashboard')
     
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -124,7 +115,7 @@ def login_view(request):
             if user.is_company():
                 return redirect('application:company_dashboard')
             else:
-                return redirect('jobs:job_list')
+                return redirect('accounts:job_seeker_dashboard')
         else:
             messages.error(request, 'Invalid username or password.')
             return render(request, 'accounts/login.html')
@@ -204,3 +195,48 @@ def profile_edit(request):
             pass
     
     return render(request, 'accounts/profile_edit.html', context)
+
+
+@login_required(login_url='accounts:login')
+def job_seeker_dashboard(request):
+    """Job seeker dashboard"""
+    if not request.user.is_job_seeker():
+        messages.error(request, 'This page is for job seekers only.')
+        return redirect('jobs:job_list')
+    
+    try:
+        job_seeker = request.user.job_seeker_profile
+    except JobSeeker.DoesNotExist:
+        messages.error(request, 'Job seeker profile not found.')
+        return redirect('accounts:profile')
+    
+    applications = JobApplication.objects.filter(
+        job_seeker=job_seeker
+    ).select_related('job', 'job__company').order_by('-applied_at')
+    
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        applications = applications.filter(status=status_filter)
+    
+    paginator = Paginator(applications, 10)
+    page_number = request.GET.get('page')
+    
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+    
+    context = {
+        'job_seeker': job_seeker,
+        'page_obj': page_obj,
+        'applications': page_obj.object_list,
+        'status_filter': status_filter,
+        'total_applications': applications.count(),
+        'pending_applications': applications.filter(status='pending').count(),
+        'accepted_applications': applications.filter(status='accepted').count(),
+        'rejected_applications': applications.filter(status='rejected').count(),
+    }
+    
+    return render(request, 'accounts/job_seeker_dashboard.html', context)
