@@ -1,0 +1,660 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - Elevate Workforce Solutions{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+    }
+
+    .hero-section h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .hero-section p {
+        font-size: 1.1rem;
+        opacity: 0.95;
+    }
+
+    /* Contact Container */
+    .contact-container {
+        padding: 80px 0;
+    }
+
+    /* Contact Info Cards */
+    .contact-info-card {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        text-align: center;
+        transition: all 0.3s ease;
+        border-top: 5px solid;
+    }
+
+    .contact-info-card:nth-child(1) {
+        border-top-color: #3498db;
+    }
+
+    .contact-info-card:nth-child(2) {
+        border-top-color: #2ecc71;
+    }
+
+    .contact-info-card:nth-child(3) {
+        border-top-color: #e74c3c;
+    }
+
+    .contact-info-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .info-icon {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+
+    .contact-info-card:nth-child(1) .info-icon {
+        color: #3498db;
+    }
+
+    .contact-info-card:nth-child(2) .info-icon {
+        color: #2ecc71;
+    }
+
+    .contact-info-card:nth-child(3) .info-icon {
+        color: #e74c3c;
+    }
+
+    .info-title {
+        font-size: 1.3rem;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .info-content {
+        color: #7f8c8d;
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .info-link {
+        color: #3498db;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .info-link:hover {
+        color: #2980b9;
+    }
+
+    /* Contact Form */
+    .contact-form-wrapper {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #2c3e50;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        padding: 12px 15px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .form-control:focus {
+        border-color: #3498db;
+        background: white;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: #bdc3c7;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 150px;
+    }
+
+    .form-help-text {
+        font-size: 0.8rem;
+        color: #95a5a6;
+        margin-top: 5px;
+    }
+
+    .form-error {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
+
+    .submit-btn {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        border: none;
+        color: white;
+        padding: 14px 40px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    /* Success Message */
+    .success-message {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+
+    .success-message i {
+        margin-right: 10px;
+        font-size: 1.2rem;
+    }
+
+    /* Response Time */
+    .response-time {
+        background: #e7f3ff;
+        border-left: 4px solid #3498db;
+        padding: 15px;
+        border-radius: 4px;
+        margin-top: 20px;
+        font-size: 0.9rem;
+        color: #2c3e50;
+    }
+
+    /* FAQ Section */
+    .faq-section {
+        background: #f8f9fa;
+        padding: 80px 0;
+    }
+
+    .faq-item {
+        background: white;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border-left: 4px solid #3498db;
+        transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .faq-question {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: #2c3e50;
+        user-select: none;
+    }
+
+    .faq-icon {
+        font-size: 1.2rem;
+        color: #3498db;
+        transition: transform 0.3s ease;
+    }
+
+    .faq-item.active .faq-icon {
+        transform: rotate(180deg);
+    }
+
+    .faq-answer {
+        display: none;
+        margin-top: 15px;
+        color: #7f8c8d;
+        line-height: 1.7;
+        padding-top: 15px;
+        border-top: 1px solid #ecf0f1;
+    }
+
+    .faq-item.active .faq-answer {
+        display: block;
+    }
+
+    /* Social Links */
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 40px;
+    }
+
+    .social-link {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 1.2rem;
+    }
+
+    .social-link:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+    }
+
+    /* Map Container */
+    .map-container {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        border-radius: 15px;
+        overflow: hidden;
+        height: 400px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.1rem;
+    }
+
+    /* Section Title */
+    .section-title {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .section-title h2 {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 15px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title h2::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 4px;
+        background: #3498db;
+        border-radius: 2px;
+    }
+
+    .section-title p {
+        color: #7f8c8d;
+        font-size: 1rem;
+        margin-top: 20px;
+    }
+
+    /* Required Field */
+    .required {
+        color: #e74c3c;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section h1 {
+            font-size: 2rem;
+        }
+
+        .map-container {
+            height: 250px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <h1>Contact Us</h1>
+        <p>We'd love to hear from you. Get in touch with our team</p>
+    </div>
+</div>
+
+<!-- Contact Information Cards -->
+<div class="contact-container">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <div class="contact-info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="info-title">Email</div>
+                    <div class="info-content">
+                        <a href="mailto:{{ email }}" class="info-link">{{ email }}</a>
+                        <p style="margin: 8px 0 0 0; font-size: 0.85rem;">We'll respond within 24 hours</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="contact-info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="info-title">Phone</div>
+                    <div class="info-content">
+                        <a href="tel:{{ phone }}" class="info-link">{{ phone }}</a>
+                        <p style="margin: 8px 0 0 0; font-size: 0.85rem;">Available Monday-Friday, 9 AM - 5 PM</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="contact-info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="info-title">Location</div>
+                    <div class="info-content">
+                        <p>{{ address }}<br>Nepal</p>
+                        <p style="margin: 8px 0 0 0; font-size: 0.85rem;">Visit our office</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="contact-form-wrapper">
+                    <h2 style="color: #2c3e50; margin-bottom: 30px; font-size: 1.8rem;">Send us a Message</h2>
+
+                    {% if form_submitted %}
+                    <div class="success-message">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <strong>Thank you!</strong> Your message has been sent successfully. We'll get back to you soon.
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" title="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="name">
+                                        Full Name <span class="required">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="name"
+                                        name="name" 
+                                        placeholder="Your full name" 
+                                        required
+                                        value="{{ request.POST.name }}"
+                                    >
+                                    <div class="form-help-text">Please enter your complete name</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="email">
+                                        Email Address <span class="required">*</span>
+                                    </label>
+                                    <input 
+                                        type="email" 
+                                        class="form-control" 
+                                        id="email"
+                                        name="email" 
+                                        placeholder="your.email@example.com" 
+                                        required
+                                        value="{{ request.POST.email }}"
+                                    >
+                                    <div class="form-help-text">We'll never share your email</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="phone">
+                                        Phone Number
+                                    </label>
+                                    <input 
+                                        type="tel" 
+                                        class="form-control" 
+                                        id="phone"
+                                        name="phone" 
+                                        placeholder="+977-1-XXXX-XXXX"
+                                        value="{{ request.POST.phone }}"
+                                    >
+                                    <div class="form-help-text">Optional - we'll use this to reach you faster</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="subject">
+                                        Subject <span class="required">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="subject"
+                                        name="subject" 
+                                        placeholder="What is this about?"
+                                        required
+                                        value="{{ request.POST.subject }}"
+                                    >
+                                    <div class="form-help-text">Choose a relevant subject</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="message">
+                                Message <span class="required">*</span>
+                            </label>
+                            <textarea 
+                                class="form-control" 
+                                id="message"
+                                name="message" 
+                                placeholder="Tell us more about your inquiry..." 
+                                required
+                            >{{ request.POST.message }}</textarea>
+                            <div class="form-help-text">Minimum 10 characters</div>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+
+                        <div class="response-time">
+                            <i class="fas fa-info-circle"></i> We typically respond within 24 business hours.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="faq-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Frequently Asked Questions</h2>
+            <p>Find answers to common questions</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="faq-item active">
+                    <div class="faq-question">
+                        <span>How long does it take to get a response?</span>
+                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        We aim to respond to all inquiries within 24 business hours. For urgent matters, please call us directly at {{ phone }}.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What information should I provide in my message?</span>
+                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        Please provide clear details about your inquiry, including your contact information and any relevant background. This helps us assist you more effectively.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can I schedule a call with your team?</span>
+                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        Yes! Please mention your preferred time in your message, and our team will reach out to confirm. We're available Monday-Friday, 9 AM - 5 PM.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is my information secure?</span>
+                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        Absolutely. We use industry-standard encryption to protect your information. Your data will never be shared with third parties.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How can I report an issue with the platform?</span>
+                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        Please use this contact form and select "Technical Issue" as the subject. Include as much detail as possible about the problem you encountered.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Social Links -->
+<div style="text-align: center; padding: 60px 0;">
+    <div class="container">
+        <h3 style="color: #2c3e50; margin-bottom: 30px;">Follow Us</h3>
+        <div class="social-links">
+            <a href="#" class="social-link" title="Facebook">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="social-link" title="Twitter">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="social-link" title="LinkedIn">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="#" class="social-link" title="Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // FAQ Toggle
+    document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', function() {
+            const faqItem = this.closest('.faq-item');
+            faqItem.classList.toggle('active');
+        });
+    });
+
+    // Form Validation
+    const contactForm = document.querySelector('form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const subject = document.getElementById('subject').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            if (!name || !email || !subject || !message) {
+                e.preventDefault();
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            if (message.length < 10) {
+                e.preventDefault();
+                alert('Message must be at least 10 characters long');
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                e.preventDefault();
+                alert('Please enter a valid email address');
+                return;
+            }
+        });
+    }
+</script>
+{% endblock %}

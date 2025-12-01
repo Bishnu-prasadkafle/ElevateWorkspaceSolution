@@ -1,0 +1,555 @@
+{% extends "base.html" %}
+{% block title %}Services - Elevate Workforce Solutions{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #3498db;
+        --primary-dark: #2980b9;
+        --success: #2ecc71;
+        --warning: #f39c12;
+        --dark: #2c3e50;
+        --light: #f8f9fa;
+        --gray: #95a5a6;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow-x: hidden; font-family: 'Inter', 'Segoe UI', sans-serif; line-height: 1.7; }
+
+    /* FULLSCREEN HERO CAROUSEL */
+    .carousel-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        /* margin-left: calc(-50vw + 50%); */
+        overflow: hidden;
+    }
+
+    .carousel-slide {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .carousel-slide.active { opacity: 1; z-index: 1; }
+
+    .carousel-slide::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg,
+            rgba(0,0,0,0.75) 0%,
+            rgba(0,0,0,0.5) 50%,
+            rgba(52,152,219,0.4) 100%);
+        z-index: 1;
+    }
+
+    .carousel-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        color: white;
+        max-width: 1200px;
+       
+        animation: fadeInUp 1.2s ease-out forwards;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(60px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .carousel-content h1 {
+        font-size: 6.5rem;
+        font-weight: 900;
+        letter-spacing: -4px;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(90deg, #ffffff, #bdc3c7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 15px 40px rgba(0,0,0,0.7);
+    }
+
+    .carousel-content p {
+        font-size: 1rem;
+        font-weight: 300;
+        opacity: 0.95;
+        text-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    }
+
+    /* Premium Animated Dots */
+    .carousel-dots {
+        position: absolute;
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 18px;
+        z-index: 10;
+    }
+
+    .dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        border: 3px solid rgba(255,255,255,0.7);
+        cursor: pointer;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(8px);
+    }
+
+    .dot.active {
+        background: white;
+        width: 55px;
+        border-radius: 30px;
+        box-shadow: 0 0 30px rgba(255,255,255,0.9);
+    }
+
+    /* ZERO GAP LAYOUT */
+    .section-wrapper { padding: 100px 0; margin: 0; background: white; }
+    .bg-dark-section { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; }
+    .bg-light { background: #f8f9fa; }
+
+    /* SECTION TITLE */
+    .section-title h2 {
+        font-size: 3.2rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 20px;
+        position: relative;
+        display: inline-block;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .section-title h2::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 6px;
+        background: var(--primary);
+        border-radius: 3px;
+    }
+
+    /* SERVICE CARDS - ULTRA PREMIUM */
+    .service-card {
+        background: white;
+        border-radius: 20px;
+        padding: 50px 30px;
+        text-align: center;
+        height: 100%;
+        transition: all 0.5s ease;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        position: relative;
+        overflow: hidden;
+        border: none;
+    }
+
+    .service-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 7px;
+        background: linear-gradient(90deg, #3498db, #9b59b6, #e74c3c);
+        border-radius: 20px 20px 0 0;
+    }
+
+    .service-card:hover {
+        transform: translateY(-25px) scale(1.04);
+        box-shadow: 0 35px 90px rgba(0,0,0,0.22);
+    }
+
+    .service-icon {
+        width: 110px;
+        height: 110px;
+        margin: 0 auto 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.2rem;
+        color: white;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        box-shadow: 0 20px 50px rgba(52,152,219,0.5);
+        transition: all 0.5s ease;
+    }
+
+    .service-card:hover .service-icon {
+        transform: scale(1.25) rotate(12deg);
+        box-shadow: 0 25px 60px rgba(52,152,219,0.7);
+    }
+
+    /* FEATURE ITEMS */
+    .feature-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 28px 0;
+        border-left: 5px solid transparent;
+        transition: all 0.4s ease;
+    }
+
+    .feature-item:hover {
+        border-left-color: var(--success);
+        padding-left: 15px;
+        background: linear-gradient(90deg, rgba(46,204,113,0.08) 0%, transparent 100%);
+    }
+
+    .feature-checkbox {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.8rem;
+        margin-right: 25px;
+        flex-shrink: 0;
+        box-shadow: 0 15px 40px rgba(46,204,113,0.4);
+    }
+
+    /* BENEFITS - GLASSMORPHISM */
+    .benefit-card {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 24px;
+        padding: 45px 35px;
+        text-align: center;
+        transition: all 0.5s ease;
+        height: 100%;
+    }
+
+    .benefit-card:hover {
+        transform: translateY(-20px);
+        background: rgba(255,255,255,0.25);
+        box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+    }
+
+    .benefit-number {
+        font-size: 5rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 15px;
+    }
+
+    /* PRICING CARDS */
+    .pricing-card {
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+        transition: all 0.5s ease;
+        background: white;
+    }
+
+    .pricing-card:hover {
+        transform: translateY(-15px) scale(1.02);
+    }
+
+    .pricing-card.featured {
+        transform: scale(1.08);
+        border: 5px solid var(--primary);
+        box-shadow: 0 40px 100px rgba(52,152,219,0.4);
+        z-index: 10;
+    }
+
+    .pricing-card.featured:hover {
+        transform: scale(1.10) translateY(-10px);
+    }
+
+    .pricing-header {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 40px 20px;
+    }
+
+    .price {
+        font-size: 4rem;
+        font-weight: 900;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 992px) {
+        .carousel-content h1 { font-size: 4.5rem; }
+        .carousel-content p { font-size: 1.5rem; }
+        .section-wrapper { padding: 80px 0; }
+        .pricing-card.featured { transform: scale(1.04); }
+    }
+
+    @media (max-width: 768px) {
+        .carousel-content h1 { font-size: 3.2rem; letter-spacing: -1px; }
+        .carousel-content p { font-size: 1.3rem; }
+        .carousel-container { height: 90vh; }
+        .section-wrapper { padding: 70px 0; }
+    }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO CAROUSEL -->
+<div class="carousel-container">
+    <div class="carousel-slide active" style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&auto=format&fit=crop&q=80');">
+        <div class="carousel-content">
+            <h1>Our Services</h1>
+            <p>Connecting exceptional talent with extraordinary opportunities</p>
+        </div>
+    </div>
+    <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1573164713712-03790a178651?w=1600&auto=format&fit=crop&q=80');">
+        <div class="carousel-content">
+            <h1>For Job Seekers</h1>
+            <p>Find your perfect role with AI-powered matching</p>
+        </div>
+    </div>
+    <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=1600&auto=format&fit=crop&q=80');">
+        <div class="carousel-content">
+            <h1>For Companies</h1>
+            <p>Build your dream team — faster and smarter</p>
+        </div>
+    </div>
+
+    <div class="carousel-dots">
+        <span class="dot active" data-slide="0"></span>
+        <span class="dot" data-slide="1"></span>
+        <span class="dot" data-slide="2"></span>
+    </div>
+</div>
+
+<!-- SERVICES GRID -->
+<div class="section-wrapper">
+    <div class="container">
+        <div class="section-title">
+            <h2>What We Offer</h2>
+            <p class="text-muted">Powerful solutions designed for your success</p>
+        </div>
+        <div class="row g-5">
+            {% for service in services %}
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas {{ service.icon }}"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark mt-3">{{ service.title }}</h3>
+                    <p class="text-muted">{{ service.description }}</p>
+                    <a href="#" class="text-primary fw-bold small mt-3 d-inline-block">Learn More →</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- JOB SEEKERS FEATURES -->
+<div class="section-wrapper bg-light">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <h2 class="mb-5">For Job Seekers</h2>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-checkbox">✓</div>
+                        <div><h5>AI-Powered Job Matching</h5><p class="text-muted">Get personalized job recommendations</p></div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-checkbox">✓</div>
+                        <div><h5>One-Click Apply</h5><p class="text-muted">Apply instantly with your saved profile</p></div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-checkbox">✓</div>
+                        <div><h5>Real-Time Alerts</h5><p class="text-muted">Never miss the perfect opportunity</p></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="bg-gradient-primary text-white rounded-4 p-5 text-center h-100 d-flex flex-column justify-content-center" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                    <i class="fas fa-rocket fa-6x mb-4 opacity-80"></i>
+                    <h3>Launch Your Career</h3>
+                    <p class="lead">Join thousands who found their dream job</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- COMPANIES FEATURES -->
+<div class="section-wrapper">
+    <div class="container">
+        <div class="row align-items-center g-5 flex-lg-row-reverse">
+            <div class="col-lg-6">
+                <h2 class="mb-5">For Companies</h2>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-checkbox">✓</div>
+                        <div><h5>Unlimited Job Posts</h5><p class="text-muted">Post as many jobs as you need</p></div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-checkbox">✓</div>
+                        <div><h5>Talent Search</h5><p class="text-muted">Access our verified candidate pool</p></div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-checkbox">✓</div>
+                        <div><h5>Analytics Dashboard</h5><p class="text-muted">Track performance of every posting</p></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="bg-gradient-success text-white rounded-4 p-5 text-center h-100 d-flex flex-column justify-content-center" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
+                    <i class="fas fa-users fa-6x mb-4 opacity-80"></i>
+                    <h3>Hire Top Talent</h3>
+                    <p class="lead">Build your perfect team</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BENEFITS SECTION -->
+<div class="section-wrapper bg-dark-section">
+    <div class="container">
+        <div class="section-title text-white">
+            <h2>Why Choose Us?</h2>
+        </div>
+        <div class="row g-5">
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-number">01</div>
+                    <h4>100% Verified Users</h4>
+                    <p>Every profile is verified for authenticity and quality</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-number">02</div>
+                    <h4>AI Smart Matching</h4>
+                    <p>Advanced algorithm connects perfect candidates</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-number">03</div>
+                    <h4>24/7 Support</h4>
+                    <p>We're always here when you need help</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PRICING -->
+<div class="section-wrapper bg-light">
+    <div class="container">
+        <div class="section-title">
+            <h2>Simple & Transparent Pricing</h2>
+        </div>
+        <div class="row g-5 justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Job Seeker</h3>
+                    </div>
+                    <div class="p-5 text-center">
+                        <h2 class="price text-primary">Free</h2>
+                        <p class="text-muted">Forever</p>
+                        <ul class="list-unstyled my-4 text-start">
+                            <li class="my-3">Unlimited applications</li>
+                            <li class="my-3">Profile & resume builder</li>
+                            <li class="my-3">Job alerts</li>
+                        </ul>
+                        <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-lg w-100">Get Started</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="pricing-card featured">
+                    <div class="pricing-header">
+                        <h3>Company Basic</h3>
+                        <span class="badge bg-light text-primary position-absolute top-0 start-50 translate-middle-x mt-3">Most Popular</span>
+                    </div>
+                    <div class="p-5 text-center">
+                        <h2 class="price text-primary">Free</h2>
+                        <p class="text-muted">Get Started</p>
+                        <ul class="list-unstyled my-4 text-start">
+                            <li class="my-3">Up to 3 active jobs</li>
+                            <li class="my-3">View applications</li>
+                            <li class="my-3">Basic analytics</li>
+                        </ul>
+                        <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-lg w-100">Start Free</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Company Premium</h3>
+                    </div>
+                    <div class="p-5 text-center">
+                        <h2 class="price text-primary">NPR 5,000<span class="fs-5">/mo</span></h2>
+                        <ul class="list-unstyled my-4 text-start">
+                            <li class="my-3"><strong>Unlimited jobs</strong></li>
+                            <li class="my-3">Featured listings</li>
+                            <li class="my-3">Priority support</li>
+                        </ul>
+                        <a href="{% url 'contact' %}" class="btn btn-outline-primary btn-lg w-100">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FINAL CTA -->
+<div class="text-white text-center py-5" style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);">
+    <div class="container">
+        <h1 class="display-3 fw-bold mb-4">Ready to Get Started?</h1>
+        <p class="lead mb-5">Join thousands of professionals already growing with us</p>
+        <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg px-5 me-4">Register Now</a>
+        <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg px-5">Contact Us</a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.dot');
+
+    function showSlide(n) {
+        slides.forEach(s => s.classList.remove('active'));
+        dots.forEach(d => d.classList.remove('active'));
+        slides[n].classList.add('active');
+        dots[n].classList.add('active');
+        currentSlide = n;
+    }
+
+    dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => showSlide(i));
+    });
+
+    setInterval(() => {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }, 2500);
+
+    // Initialize
+    showSlide(0);
+</script>
+{% endblock %}

@@ -136,10 +136,19 @@ AUTH_USER_MODEL = 'accounts.User'
 
 # Login settings
 LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL = 'jobs:job_list'
-
-# Login settings
-LOGIN_URL = 'accounts:login'
 # Dynamic redirect handled in views based on user role
 LOGIN_REDIRECT_URL = 'jobs:job_list'
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Development
+# For production, use:
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'your-app-password'
+
+DEFAULT_FROM_EMAIL = 'noreply@elevateworkforce.com'
+CONTACT_EMAIL = 'info@elevateworkforce.com'
 
