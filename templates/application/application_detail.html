@@ -101,6 +101,43 @@
                         </div>
                     </div>
 
+                    <!-- Uploaded Files -->
+                    {% if is_company or is_applicant %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Submitted Files</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if application.resume %}
+                                <p>
+                                    <strong>Resume / CV:</strong>
+                                    <a href="{{ application.resume.url }}" target="_blank" rel="noopener noreferrer" class="ms-2">
+                                        Download
+                                    </a>
+                                </p>
+                            {% endif %}
+
+                            {% if application.documents.exists %}
+                                <div class="mt-3">
+                                    <strong>Other Documents:</strong>
+                                    <ul class="list-unstyled mt-2">
+                                        {% for doc in application.documents.all %}
+                                            <li>
+                                                <a href="{{ doc.file.url }}" target="_blank" rel="noopener noreferrer">
+                                                    {{ doc.label|default:doc.file.name|slice:":40" }}
+                                                </a>
+                                                <small class="text-muted ms-2">(uploaded {{ doc.uploaded_at|date:"M d, Y" }})</small>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% elif not application.resume %}
+                                <p class="text-muted">No files uploaded.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <!-- Application Timeline -->
                     <div class="card">
                         <div class="card-header">

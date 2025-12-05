@@ -234,6 +234,10 @@
             min-height: calc(100vh - 120px);
             padding-top: 30px;
         }
+
+        .footer-copyright {
+            color: rgba(255,255,255,0.5);
+        }
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -245,10 +249,8 @@
         <div class="container">
             <!-- LOGO + ELEVATE TEXT -->
             <a class="navbar-brand" href="{% url 'home' %}">
-                <img src="{% static 'images/logo.png' %}" alt="Elevate Logo" height="52">
-                <span class="plain-text brand-red">FO</span>
-                <span class="plain-text brand-white">R</span>
-                <span class="plain-text brand-slate">CE</span>
+                <img src="{% static 'images/logo1.png' %}" alt="Elevate Logo" height="52" width="90">
+            
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" title="Toggle navigation">
@@ -262,42 +264,41 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'jobs:job_list' %}">Jobs</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
                     {% if user.is_authenticated %}
-                    {% if user.is_job_seeker %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'accounts:job_seeker_dashboard' %}">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'application:my_applications' %}">Applications</a></li>
-                    {% elif user.is_company %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'application:company_dashboard' %}">Dashboard</a></li>
-                    <li class="nav-item ms-3">
-                        <a class="btn btn-post-job" href="{% url 'jobs:create_job' %}">
-                            Post Job
-                        </a>
-                    </li>
-                    {% endif %}
-                    {% if user.is_superuser %}
-                    <li class="nav-item ms-3">
-                        <a class="btn btn-admin" href="{% url 'accounts:admin_dashboard' %}">
-                            Admin
-                        </a>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item dropdown ms-4">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            {{ user.username }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">Profile</a></li>
-                            <li><a class="dropdown-item" href="{% url 'accounts:profile_edit' %}">Edit Profile</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">Logout</a></li>
-                        </ul>
-                    </li>
+                        {% if user.is_job_seeker %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'accounts:job_seeker_dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'application:my_applications' %}">Applications</a></li>
+                        {% elif user.is_company %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'application:company_dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item ms-3">
+                            <a class="btn btn-post-job" href="{% url 'jobs:create_job' %}">
+                                Post Job
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user.is_superuser %}
+                        <li class="nav-item ms-3">
+                            <a class="btn btn-admin" href="{% url 'accounts:admin_dashboard' %}">
+                                Admin
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item dropdown ms-4">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile_edit' %}">Edit Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
                     {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'accounts:register' %}">Register</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'accounts:register' %}">Register</a></li>
                     {% endif %}
                 </ul>
             </div>
-        </div>
     </nav>
 
     <!-- Messages -->
@@ -351,8 +352,8 @@
                     </p>
                 </div>
             </div>
-            <div class="text-center mt-5 text-white-50">
-                <p>&copy; 2025 Elevate Workforce Solutions. Made with love in Nepal</p>
+            <div class="text-center mt-5">
+                <p class="footer-copyright">&copy; 2025 Elevate Workforce Solutions. Made with love in Nepal</p>
             </div>
         </div>
     </footer>

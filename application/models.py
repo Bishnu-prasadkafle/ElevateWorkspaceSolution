@@ -18,6 +18,7 @@ class JobApplication(models.Model):
     job_seeker = models.ForeignKey(JobSeeker, on_delete=models.CASCADE, related_name='applications')
     status = models.CharField(max_length=20, choices=APPLICATION_STATUS_CHOICES, default='pending')
     cover_letter = models.TextField(blank=True, null=True)
+    resume = models.FileField(upload_to='applications/resumes/', blank=True, null=True)
     applied_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -54,3 +55,17 @@ class JobApplication(models.Model):
         """Get number of days since application was submitted"""
         delta = timezone.now() - self.applied_at
         return delta.days
+
+
+class ApplicationDocument(models.Model):
+    """Additional documents uploaded for an application (CV, certificates, portfolio etc.)"""
+    application = models.ForeignKey(JobApplication, on_delete=models.CASCADE, related_name='documents')
+    file = models.FileField(upload_to='applications/documents/')
+    label = models.CharField(max_length=150, blank=True, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-uploaded_at']
+
+    def __str__(self):
+        return f"Document for {self.application} - {self.file.name.split('/')[-1]}"

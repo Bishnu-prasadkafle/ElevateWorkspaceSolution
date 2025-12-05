@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from jobs.models import Job
 from .models import JobApplication
+from .models import ApplicationDocument
 
 
 @login_required(login_url='accounts:login')
@@ -37,6 +38,8 @@ def apply_job(request, job_id):
     if request.method == 'POST':
         try:
             cover_letter = request.POST.get('cover_letter', '')
+            resume_file = request.FILES.get('resume')
+            other_files = request.FILES.getlist('other_documents')
             
             application = JobApplication.objects.create(
                 job=job,
@@ -44,6 +47,19 @@ def apply_job(request, job_id):
                 cover_letter=cover_letter,
                 status='pending'
             )
+
+            # Save resume if provided
+            if resume_file:
+                application.resume = resume_file
+                application.save()
+
+            # Save any additional uploaded documents
+            for f in other_files:
+                try:
+                    ApplicationDocument.objects.create(application=application, file=f)
+                except Exception:
+                    # continue saving other files even if one fails
+                    continue
             
             messages.success(request, 'Your application has been submitted successfully!')
             return redirect('application:application_detail', pk=application.pk)

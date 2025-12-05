@@ -26,13 +26,25 @@
                     </div>
 
                     <!-- Application Form -->
-                    <form method="post" novalidate>
+                    <form method="post" enctype="multipart/form-data" novalidate>
                         {% csrf_token %}
 
                         <div class="mb-4">
                             <label for="cover_letter" class="form-label fw-bold">Cover Letter</label>
                             <textarea class="form-control" id="cover_letter" name="cover_letter" rows="8" placeholder="Tell the company why you're interested in this position and why you're a great fit..."></textarea>
                             <small class="text-muted">Optional but recommended</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="resume" class="form-label fw-bold">Upload Resume / CV <span class="text-muted">(PDF, DOC, DOCX)</span></label>
+                            <input type="file" accept=".pdf,.doc,.docx" name="resume" id="resume" class="form-control">
+                            <small class="text-muted">Max recommended size: 5MB</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="other_documents" class="form-label fw-bold">Other Documents (Certificates, Portfolio)</label>
+                            <input type="file" name="other_documents" id="other_documents" class="form-control" multiple>
+                            <small class="text-muted">You can upload multiple files.</small>
                         </div>
 
                         <div class="row">
