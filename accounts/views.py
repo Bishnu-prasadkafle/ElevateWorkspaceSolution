@@ -21,10 +21,16 @@ def register(request):
         password2 = request.POST.get('password2')
         user_type = request.POST.get('user_type', 'job_seeker')
         phone_number = request.POST.get('phone_number', '')
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
         
         # Validation
         if not all([username, email, password1, password2]):
             messages.error(request, 'All fields are required.')
+            return render(request, 'accounts/register.html')
+        
+        if user_type == 'job_seeker' and not all([first_name, last_name]):
+            messages.error(request, 'First name and last name are required for job seekers.')
             return render(request, 'accounts/register.html')
         
         if password1 != password2:
@@ -51,8 +57,8 @@ def register(request):
                 password=password1,
                 role=user_type,
                 phone_number=phone_number,
-                first_name=request.POST.get('first_name', ''),
-                last_name=request.POST.get('last_name', '')
+                first_name=first_name,
+                last_name=last_name
             )
 
             # Create corresponding profile

@@ -32,14 +32,14 @@
                         </div>
 
                         <!-- Common Fields -->
-                        <div class="row">
+                        <div id="name-fields" class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="first_name" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                <input type="text" class="form-control" id="first_name" name="first_name">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="last_name" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                <input type="text" class="form-control" id="last_name" name="last_name">
                             </div>
                         </div>
 
@@ -138,18 +138,28 @@
     const companyRadio = document.getElementById('company');
     const jobSeekerFields = document.getElementById('job-seeker-fields');
     const companyFields = document.getElementById('company-fields');
+    const nameFields = document.getElementById('name-fields');
+    const firstNameInput = document.getElementById('first_name');
+    const lastNameInput = document.getElementById('last_name');
 
     function toggleFields() {
         if (jobSeekerRadio.checked) {
+            nameFields.style.display = 'block';
             jobSeekerFields.style.display = 'block';
             companyFields.style.display = 'none';
+            firstNameInput.required = true;
+            lastNameInput.required = true;
         } else {
+            nameFields.style.display = 'none';
             jobSeekerFields.style.display = 'none';
             companyFields.style.display = 'block';
+            firstNameInput.required = false;
+            lastNameInput.required = false;
         }
     }
 
     jobSeekerRadio.addEventListener('change', toggleFields);
     companyRadio.addEventListener('change', toggleFields);
+    toggleFields();
 </script>
 {% endblock %}
